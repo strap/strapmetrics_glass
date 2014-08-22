@@ -62,7 +62,7 @@ public class Strap implements SensorEventListener {
 
     //constants
     private int kMaxAccelLength = 100;
-    private int kAccelerometerFrequencyInMS = 100;
+    private int kAccelerometerFrequencyInMS = 200;
 
     private int kSystemDataFrequencyInMS = 1000 * 60 * 5;
 

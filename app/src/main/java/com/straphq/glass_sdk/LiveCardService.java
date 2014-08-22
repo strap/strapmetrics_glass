@@ -17,6 +17,7 @@ public class LiveCardService extends Service {
     private static final String LIVE_CARD_TAG = "LiveCardService";
 
     private LiveCard mLiveCard;
+    private Strap strap = null;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -35,9 +36,16 @@ public class LiveCardService extends Service {
             Intent menuIntent = new Intent(this, LiveCardMenuActivity.class);
             mLiveCard.setAction(PendingIntent.getActivity(this, 0, menuIntent, 0));
             mLiveCard.publish(PublishMode.REVEAL);
+
         } else {
             mLiveCard.navigate();
         }
+
+        if(strap == null) {
+            strap = new Strap(getApplicationContext(), "rdjYKgrfeAPeMSjQ4");
+        }
+
+
         return START_STICKY;
     }
 

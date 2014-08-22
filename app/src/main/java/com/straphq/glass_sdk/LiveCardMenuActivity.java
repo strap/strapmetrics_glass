@@ -15,6 +15,8 @@ public class LiveCardMenuActivity extends Activity {
         super.onAttachedToWindow();
         // Open the options menu right away.
         openOptionsMenu();
+
+
     }
 
     @Override
