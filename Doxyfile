@@ -1,0 +1,7 @@
+PROJECT_NAME = "StrapMetrics"
+PROJECT_BRIEF = ""
+OUTPUT_DIRECTORY = "doc"
+INPUT = README.md app/src/main/java/com/straphq/glass_sdk/
+USE_MDFILE_AS_MAINPAGE = README.md
+FILE_PATTERNS = *.java
+RECURSIVE = YES
