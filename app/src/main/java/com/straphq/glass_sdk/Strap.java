@@ -45,7 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-public class Strap implements SensorEventListener {
+public class Strap {
 
 
     //members
@@ -81,11 +81,16 @@ public class Strap implements SensorEventListener {
 
 
     //TODO finish singleton implementation
-    public static Strap getInstance() {
+    /*public static Strap getInstance() {
         return strapManager;
-    }
+    }*/
 
-    Strap(Context applicationContext, String strapAppID) {
+    /**
+     * Starts StrapMetrics on the device
+     * @param applicationContext The context of your application.
+     * @param strapAppID The Strap application ID to be used
+     */
+    public Strap(Context applicationContext, String strapAppID) {
 
         //Singleton reference TODO
         strapManager = this;
@@ -106,7 +111,17 @@ public class Strap implements SensorEventListener {
         display.getSize(mDisplayResolution);
 
         //Setup accelerometer pinging.
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(new SensorEventListener() {
+            @Override
+            public void  onSensorChanged(SensorEvent sensorEvent) {
+                setLastAccelData(sensorEvent.values);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        }, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         Timer accelTimer = new Timer();
         Timer systemTimer = new Timer();
@@ -149,6 +164,14 @@ public class Strap implements SensorEventListener {
 
 
 
+    /**
+     * Logs the specified event with Strap Metrics.
+     * <p>
+     * This method always returns immediately, whether or not the
+     * message was immediately sent to the phone.
+     *
+     * @param  eventName  The name of the Strap event being logged.
+     */
     public void logEvent(String eventName) {
 
 
@@ -171,11 +194,7 @@ public class Strap implements SensorEventListener {
         }
     }
 
-
-
-
-
-    public void logSystemData(int battery, int brightness, long time) throws JSONException, IOException {
+    private void logSystemData(int battery, int brightness, long time) throws JSONException, IOException {
 
         String query = getBaseQuery();
 
@@ -201,7 +220,7 @@ public class Strap implements SensorEventListener {
 
     }
 
-    public void logAccelData() throws IOException {
+    private void logAccelData() throws IOException {
         String query = getBaseQuery();
 
         query = query
@@ -220,13 +239,6 @@ public class Strap implements SensorEventListener {
         mAccelDataList = new JSONArray();
     }
 
-    //Sensor listener override methods
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-        //TODO handling of accuracy changes
-    }
-
     //Setter for
     public void  setLastAccelData(float[] accelData) {
         synchronized(lock) {
@@ -242,10 +254,7 @@ public class Strap implements SensorEventListener {
 
     //Basic reading of the accelerometer. Just updates the member variables to the new values.
     //If collecting a trend, something like a list/vector could be used to get deltas.
-    @Override
-    public void  onSensorChanged(SensorEvent sensorEvent) {
-        setLastAccelData(sensorEvent.values);
-    }
+
 
     private void addAccelData(float [] coords, long ts) throws JSONException {
         // append the values in tmp to the result JSONArray
