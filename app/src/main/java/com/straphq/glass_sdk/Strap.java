@@ -24,6 +24,7 @@ import android.provider.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -167,12 +168,12 @@ public class Strap {
     /**
      * Logs the specified event with Strap Metrics.
      * <p>
-     * This method always returns immediately, whether or not the
-     * message was immediately sent to the phone.
+     * This method always returns immediately.
      *
      * @param  eventName  The name of the Strap event being logged.
+     * @param  jsonData The custom JSON data to be logged with the event
      */
-    public void logEvent(String eventName) {
+    public void logEvent(String eventName, JSONObject jsonData) {
 
 
         //create a new data map entry for this event and load it with data
@@ -185,6 +186,14 @@ public class Strap {
         query = query +
                 "&action_url=" + eventName;
 
+        if(jsonData != null) {
+            try {
+                query += "&cvar=" + URLEncoder.encode(jsonData.toString(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                Log.d("EncodingEvent", e.getMessage());
+            }
+        }
+
         try {
             Runnable r = new PostLog(strapURL,query);
             new Thread(r).start();
@@ -192,6 +201,17 @@ public class Strap {
             Log.e("POST_ERROR","ERROR with PostLog Thread: " + e.toString());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Logs the specified event with Strap Metrics.
+     * <p>
+     * This method always returns immediately.
+     *
+     * @param  eventName  The name of the Strap event being logged.
+     */
+    public void logEvent(String eventName) {
+        logEvent(eventName, null);
     }
 
     private void logSystemData(int battery, int brightness, long time) throws JSONException, IOException {

@@ -11,7 +11,7 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class PostLog implements Runnable {
+class PostLog implements Runnable {
     private String url;
     private String query;
 
